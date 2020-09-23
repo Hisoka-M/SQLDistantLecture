@@ -18,14 +18,15 @@ import java.net.URL;
 public class MainActivity extends Activity {
     TextView results;
     EditText town;
-    InputStream is;
     // lien avec le PHP qui procède à la requête
-    String urlWebService = "http://172.16.47.101/accessrvtowns/accesSrvTowns.php?beginning=";
+    String urlWebService = "http://172.16.47.51/Communes/svc_communes.php?debut=";
+    //String urlWebService = "http://172.16.47.101/accessrvtowns/accesSrvTowns.php?beginning=";
     //ipconfig/all
     HttpURLConnection co;
     URL url;
-    BufferedReader br;
     StrictMode.ThreadPolicy policy;
+    InputStream inputStream;
+    BufferedReader br;
 
 
     @Override
@@ -34,32 +35,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         results = (TextView) findViewById(R.id.TV_Results);
         town = (EditText) findViewById(R.id.ET_town);
-        is = null;
         policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-    }
-
-
-    private String getServerDataRawText(String urlWebService){
-        StringBuilder str = new StringBuilder();
-        String line;
-        StrictMode.setThreadPolicy(policy);
-        try {
-            // échange http avec le serveur
-            url = new URL(urlWebService);
-            co.connect();
-            is = co.getInputStream(); // réponse HTTP
-            co = (HttpURLConnection)url.openConnection();
-
-            // exploitation/analyse de la réponse
-            br = new BufferedReader(new InputStreamReader(is));
-
-            while ((line = br.readLine()) !=null) {
-                str.append(" - ").append(line).append("\n"); // concatenation
-            }
-        } catch (Exception exception){
-            Log.e("log_tag", "Error during data reading :" + exception.toString());
-        }
-        return str.toString();
     }
 
 
@@ -71,4 +47,28 @@ public class MainActivity extends Activity {
     }
 
 
+    private String getServerDataRawText(String urlWebService){
+        StrictMode.setThreadPolicy(policy);
+        StringBuilder str = new StringBuilder();
+        String line;
+
+
+        try {
+            // échange http avec le serveur
+            url  = new URL(urlWebService);
+            co = (HttpURLConnection)url.openConnection();
+            co.connect();
+            inputStream = co.getInputStream(); // réponse HTTP
+
+            // exploitation/analyse de la réponse
+            br = new BufferedReader(new InputStreamReader(inputStream));
+
+            while ((line = br.readLine()) !=null) {
+                str.append(" - ").append(line).append("\n"); // concatenation
+            }
+        } catch (Exception exception){
+            Log.e("log_tag", "Error during data reading :" + exception.toString());
+        }
+        return str.toString();
+    }
 }
