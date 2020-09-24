@@ -2,6 +2,7 @@ package com.example.sqldistantlecture;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -23,33 +24,38 @@ public class MainActivity extends Activity {
     TextView results;
     EditText town;
     // lien avec le PHP qui procède à la requête
-    //String urlWebService = "http://172.16.47.51/Communes/svc_communes.php?debut=";
-    String urlWebService = "http://172.16.47.101/accessrvtowns/accesSrvTowns.php?beginning=";
+    String urlWebService;
     //ipconfig/all
     HttpURLConnection co;
     URL url;
-    StrictMode.ThreadPolicy policy;
+    // quand il y a un thread multitache
+    //StrictMode.ThreadPolicy policy;
     InputStream inputStream = null;
     BufferedReader br;
     JSONArray jsonArray;
+    AsyncTasks asyncTasks;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
         results = (TextView) findViewById(R.id.TV_Results);
         town = (EditText) findViewById(R.id.ET_town);
+        urlWebService = "http://172.16.47.101/accessrvtowns/accesSrvTowns.php?beginning=";
+        //urlWebService = "http://172.16.47.51/Communes/svc_communes.php?debut=";
+        asyncTasks = new AsyncTasks();
     }
 
 
     @SuppressLint("SetTextI18n")
     public void Search(View view){
+        //quand il n'y a qu'un seul thread multitache
+        //policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        //StrictMode.setThreadPolicy(policy);
         urlWebService += town.getText();
         results.setText("Towns beginning with " + town.getText() + " : " );
-        results.append(getServerDataJSON(urlWebService));
+        asyncTasks.execute();
     }
 
 
@@ -108,7 +114,19 @@ public class MainActivity extends Activity {
         } catch (JSONException exept){
             Log.e("log_tag", "Erreur pdt ana data" + exept.toString());
         }
-
         return str;
+    }
+    private class AsyncTasks extends AsyncTask<Void, Integer, String> {
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            return (getServerDataJSON(urlWebService));
+        }
+
+        @Override
+        protected void onPostExecute(String res) {
+            results.append(res);
+        }
+
     }
 }
