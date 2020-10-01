@@ -24,9 +24,7 @@ public class MainActivity extends Activity {
     TextView results;
     EditText town;
     // lien avec le PHP qui procède à la requête
-    String urlWebServicebase;
-    String urlWebService;
-
+    String urlWebService, urlWebServicebase;
     //ipconfig/all
     HttpURLConnection co;
     URL url;
@@ -35,7 +33,6 @@ public class MainActivity extends Activity {
     InputStream inputStream = null;
     BufferedReader br;
     JSONArray jsonArray;
-    AsyncTasks asyncTasks;
 
 
     @Override
