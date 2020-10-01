@@ -24,7 +24,9 @@ public class MainActivity extends Activity {
     TextView results;
     EditText town;
     // lien avec le PHP qui procède à la requête
+    String urlWebServicebase;
     String urlWebService;
+
     //ipconfig/all
     HttpURLConnection co;
     URL url;
@@ -42,9 +44,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         results = (TextView) findViewById(R.id.TV_Results);
         town = (EditText) findViewById(R.id.ET_town);
-        urlWebService = "http://172.16.47.101/accessrvtowns/accesSrvTowns.php?beginning=";
+        urlWebServicebase = "http://192.168.43.182/accessrvtowns/accesSrvTowns.php?beginning=";
         //urlWebService = "http://172.16.47.51/Communes/svc_communes.php?debut=";
-        asyncTasks = new AsyncTasks();
     }
 
 
@@ -53,8 +54,9 @@ public class MainActivity extends Activity {
         //quand il n'y a qu'un seul thread multitache
         //policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         //StrictMode.setThreadPolicy(policy);
-        urlWebService += town.getText();
+        urlWebService = urlWebServicebase + town.getText();
         results.setText("Towns beginning with " + town.getText() + " : " );
+        AsyncTasks asyncTasks = new AsyncTasks();
         asyncTasks.execute();
     }
 
